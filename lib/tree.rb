@@ -180,6 +180,60 @@ class Tree
     end
   end
 
+  def height(node = @root)
+    return -1 unless node
+
+    left_h = height(node.left)
+    right_h = height(node.right)
+
+    return left_h + 1 if left_h > right_h
+
+    right_h + 1
+  end
+
+  def depth(value)
+    temp = @root
+    res = 0
+
+    while temp && temp.value != value
+      res += 1
+
+      temp = value > temp.value ? temp.right : temp.left
+    end
+
+    return res if temp
+
+    nil
+  end
+
+  def depth_rec(value, node = @root)
+    return nil unless node
+    return 0 if node.value == value
+
+    lower_depth = value > node.value ? depth_rec(value, node.right) : depth_rec(value, node.left)
+
+    return lower_depth + 1 if lower_depth
+
+    nil
+  end
+
+  def balanced?(node = @root)
+    return true unless node
+
+    left_h = height(node.left)
+    right_h = height(node.right)
+
+    return (0..1).include?((left_h - right_h).abs) if balanced?(node.left) && balanced?(node.right)
+
+    false
+  end
+
+  def rebalance
+    sorted_array = inorder
+
+    @root = build_tree(sorted_array, true)
+  end
+
   def to_s(node = @root, prefix = '', is_left = true)
     res = if node.right
             "#{to_s(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false)}\n"
